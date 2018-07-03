@@ -2,7 +2,7 @@
 
 Filter lines based on the current text selection (including multi-line selections)
 
-![comparison](./docs/img/comparison.png)
+![comparison](https://github.com/jessexknight/atom-filter-lines/blob/master/docs/img/comparison.png?raw=true)
 
 ## Keybinding:
 
