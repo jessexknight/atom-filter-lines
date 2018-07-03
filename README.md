@@ -6,7 +6,7 @@ Filter lines based on the current text selection (including multi-line selection
 
 ## Keybinding:
 
-<kbd>shift</kbd>+<kbd>alt</kbd>+<kbd>f</kbd>: Toggles line filtering
+<kbd>ctrl</kbd>+<kbd>alt</kbd>+<kbd>f</kbd>: Toggles line filtering
 
 ## Settings:
 
