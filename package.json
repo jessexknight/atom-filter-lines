@@ -1,7 +1,7 @@
 {
   "name": "filter-lines",
   "main": "./lib/filter-lines",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Filter lines based on the current text selection",
   "keywords": [],
   "repository": "https://github.com/jessexknight/atom-filter-lines",
