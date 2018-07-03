@@ -1,37 +1,31 @@
 {CompositeDisposable} = require 'atom'
 # exports
 module.exports =
-  configDefaults:
-    toggle: false
-  config:
-    toggle:
-      type: 'boolean'
-      default: false
-      description: 'Activate filter-lines'
   subscriptions: null
 
-  # standard activation stuff
+  # activation stuff with state
   activate: ->
+    @toggle = false
     @subscriptions = new CompositeDisposable
-    @subscriptions.add atom.commands.add 'atom-workspace',
-      'filter-lines:toggle': => @toggle()
+    @subscriptions.add atom.commands.add 'atom-text-editor',
+      'filter-lines:toggle': => @main(@toggle)
 
   # standard deactivation stuff
   deactivate: ->
     @subscriptions.dispose()
 
   # main function
-  toggle: ->
+  main: (@toggle) ->
 
     # get the editor and current selection
     editor    = atom.workspace.getActiveTextEditor()
     selection = editor.getSelectedText().replace /[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&"
 
     # if we are not yet toggled on && we have selected something
-    if !atom.config.get('filter-lines.toggle') && !!selection
+    if !@toggle && !!selection
 
       # toggle on
-      atom.config.set('filter-lines.toggle',true)
+      @toggle = true
 
       # scan the buffer for the selection (including multi-line)
       keep = []
@@ -64,5 +58,5 @@ module.exports =
     else
 
       # toggle off
-      atom.config.set('filter-lines.toggle',false)
+      @toggle = false
       editor.unfoldAll()
