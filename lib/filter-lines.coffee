@@ -1,6 +1,13 @@
 {CompositeDisposable} = require 'atom'
 # exports
 module.exports =
+  configDefaults:
+    cozy: false
+  config:
+    cozy:
+      type: 'boolean'
+      default: false
+      description: 'No gaps between filtered lines (default is one line)'
   subscriptions: null
 
   # activation stuff with state
@@ -44,15 +51,17 @@ module.exports =
             start = row
             folding = true
           else if row == editor.getLineCount()-1  # end this fold block [eof]
-            blocks.push([start,row])
+            blocks.push([[start,0],[row-1,999]])
         else
           if folding                              # end this fold block [new match]
-            blocks.push([start,row-1])
+            blocks.push([[start,0],[row-1,999]])
             folding = false
 
       # apply folding
       for block in blocks
-        editor.foldBufferRange([[block[0],0], [block[1],999]])
+        if atom.config.get('filter-lines.cozy') && block[0][0]
+          block[0] = [block[0][0]-1,999]
+        editor.foldBufferRange(block)
 
     # unfold everything
     else

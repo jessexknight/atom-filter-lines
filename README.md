@@ -2,6 +2,8 @@
 
 Filter lines based on the current text selection (including multi-line selections)
 
+Image shows JSON with filter-lines: Original, Default, Cozy
+
 ![comparison](https://github.com/jessexknight/atom-filter-lines/blob/master/docs/img/comparison.png?raw=true)
 
 ## Keybinding:
@@ -10,17 +12,19 @@ Filter lines based on the current text selection (including multi-line selection
 
 ## Settings:
 
-TBD [ **Toggle** currently does nothing ]
+Setting [ default ]: _Description_
+
+- **Cozy** [ `false` ]: No gaps between filtered lines (default is one line)
 
 ## To Do:
 
 - [ ] Find-and-Replace like panel with:
   - [ ] RegExp support
   - [ ] Case support
-- [ ] Option to fold to zero lines instead of one (with `...`)
+- [x] Option to fold to zero lines instead of one (with `...`)
 - [ ] Option to expand children of all filtered lines (e.g. for editing a list of json objects)
 - [ ] Preserve pre-filter folding after toggle off
-- [ ] Relevant settings & hidden **Toggle** state
+- [x] hidden **Toggle** state
 
 ## Thanks
 
