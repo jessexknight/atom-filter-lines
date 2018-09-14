@@ -26,7 +26,15 @@ module.exports =
 
     # get the editor and current selection
     editor    = atom.workspace.getActiveTextEditor()
-    selection = editor.getSelectedText().replace /[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&"
+    selection = editor.getSelectedText()
+    if selection.length < 32768
+      selection = selection.replace /[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&"
+    else
+      atom.notifications.addWarning('Filter Lines', {
+          'dismissable': true,
+          'detail': 'Selection is too large'
+        })
+      return
 
     # if we are not yet toggled on && we have selected something
     if !@toggle && !!selection
