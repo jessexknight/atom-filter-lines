@@ -1,34 +1,29 @@
 {CompositeDisposable} = require 'atom'
 # exports
 module.exports =
-  configDefaults:
-    cozy: false
-  config:
-    cozy:
-      type: 'boolean'
-      default: false
-      description: 'No gaps between filtered lines (default is one line)'
   subscriptions: null
 
   # activation stuff with state
   activate: ->
     @toggle = false
     @subscriptions = new CompositeDisposable
-    @subscriptions.add atom.commands.add 'atom-text-editor',
-      'filter-lines:toggle': => @main(@toggle)
-
-  # standard deactivation stuff
+    @subscriptions.add(atom.commands.add('atom-text-editor',
+      'filter-lines:filter': => @filter(@toggle,false)))
+    @subscriptions.add(atom.commands.add('atom-text-editor',
+      'filter-lines:filter-and-select': => @filter(@toggle,true)))
+  # deactivation stuff
   deactivate: ->
     @subscriptions.dispose()
 
   # main function
-  main: (@toggle) ->
+  filter: (@toggle,select) ->
 
     # get the editor and current selection
     editor    = atom.workspace.getActiveTextEditor()
     selection = editor.getSelectedText()
+    selection
     if selection.length < 32768
-      selection = selection.replace /[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&"
+      selectionEscape = selection.replace /[\-\[\]{}()*+?.,\\\^$|#\s]/g, "\\$&"
     else
       atom.notifications.addWarning('Filter Lines', {
           'dismissable': true,
@@ -37,41 +32,49 @@ module.exports =
       return
 
     # if we are not yet toggled on && we have selected something
+    # fold everything else
     if !@toggle && !!selection
 
       # toggle on
       @toggle = true
 
       # scan the buffer for the selection (including multi-line)
-      keep = []
-      editor.scan new RegExp(selection,'g'), (m) ->
-        keep.push.apply(keep,[m.range.start.row..m.range.end.row])
+      matches = []
+      editor.scan(new RegExp(selectionEscape,'g'), (m) =>
+        matches.push.apply(matches,[m.range.start.row .. m.range.end.row]))
 
-      # create binary vector of lines to fold
-      tofold  = [0..editor.getLineCount()].map (x) => (keep.indexOf(x) == -1)
+      # collect some variables
+      N = editor.getLineCount()
+      before = atom.config.get('filter-lines.before')
+      after  = atom.config.get('filter-lines.after')
 
-      # create fold blocks [[start,stop],[start,stop],...]
+      # create a binary vector of lines to filter
+      tokeep = (false for [0 .. N])
+      mMin = matches.map((i) -> Math.min(N,Math.max(0, i - before)))
+      mMax = matches.map((i) -> Math.min(N,Math.max(0, i + after)))
+      for m,i in matches
+        tokeep[mMin[i]..mMax[i]] = (true for [mMin[i]..mMax[i]])
+        # if in "filter-and-select" mode: add selection for each range
+        if select
+          editor.addSelectionForBufferRange([[mMin[i],0],[mMax[i],999]])
+
+      # create fold blocks [ [[row-start,col-start],[row-end,col-end]], ... ]
       folding = false
-      blocks  = []
-      for foldline,row in tofold
-        if foldline
-          if !folding                             # start new fold block
-            start = row
-            folding = true
-          else if row == editor.getLineCount()-1  # end this fold block [eof]
-            blocks.push([[start,0],[row-1,999]])
-        else
-          if folding                              # end this fold block [new match]
-            blocks.push([[start,0],[row-1,999]])
-            folding = false
+      blocks = []
+      for keep,i in tokeep                          # start a new fold block
+        if ((!folding) and (!keep))
+          start = i
+          folding = true
+        if (( folding) and ( keep)) or (i == N-1)   # end this fold block
+          end = i-1
+          folding = false
+          blocks.push([[start,0],[end,999]])
 
       # apply folding
       for block in blocks
-        if atom.config.get('filter-lines.cozy') && block[0][0]
-          block[0] = [block[0][0]-1,999]
         editor.foldBufferRange(block)
 
-    # unfold everything
+    # else: unfold all blocks
     else
 
       # toggle off

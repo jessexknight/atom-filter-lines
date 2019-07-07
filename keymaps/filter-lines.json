@@ -1,5 +1,6 @@
 {
   "atom-workspace": {
-    "ctrl-cmd-f": "filter-lines:toggle"
+    "ctrl-cmd-f":     "filter-lines:filter",
+    "ctrl-cmd-alt-f": "filter-lines:filter-and-select"
   }
 }

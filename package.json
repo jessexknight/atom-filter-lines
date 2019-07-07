@@ -1,13 +1,32 @@
 {
   "name": "filter-lines",
-  "main": "./lib/filter-lines",
-  "version": "1.2.3",
   "description": "Filter lines based on the current text selection",
-  "keywords": [],
-  "repository": "https://github.com/jessexknight/atom-filter-lines",
+  "version": "1.2.3",
   "license": "MIT",
+  "repository": "https://github.com/jessexknight/atom-filter-lines",
+  "main": "./lib/filter-lines",
   "engines": {
-    "atom": ">=1.0.0 <2.0.0"
+    "atom": "*"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "activationCommands": {
+    "atom-workspace": [
+      "filter-lines:filter",
+      "filter-lines:filter-and-select"
+    ]
+  },
+  "configSchema": {
+    "before": {
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "description": "Number of lines to keep before each set of matching lines"
+    },
+    "after": {
+      "type": "integer",
+      "default": 0,
+      "minimum": 0,
+      "description": "Number of lines to keep after each set of matching lines"
+    }
+  }
 }

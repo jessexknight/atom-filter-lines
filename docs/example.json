@@ -1,0 +1,17 @@
+[
+  {
+    "name": "N0",
+    "desc": "initial population size",
+    "value": 1000
+  },
+  {
+    "name": "nu",
+    "desc": "rate of population entry",
+    "value": 0.05
+  },
+  {
+    "name": "mu",
+    "desc": "rate of population exit",
+    "value": 0.03
+  }
+]
